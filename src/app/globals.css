@@ -1,0 +1,97 @@
+:root {
+  --primary: #7B241C; /* Deep Maroon */
+  --secondary: #9A7D0A; /* Deep Gold */
+  --accent: #1F4E79; /* Royal Blue */
+  --bg: #FDF5E6; /* Old Lace / Parchment */
+  --text: #2C2C2C;
+  --text-muted: #666;
+  --white: #ffffff;
+  --success: #196F3D;
+  --error: #A93226;
+  --glass: rgba(255, 255, 255, 0.7);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --border-radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -0.02em;
+}
+
+.premium-card {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.premium-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 30px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 5px 15px rgba(123, 36, 28, 0.4);
+}
+
+.btn-gold {
+  background: var(--secondary);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 30px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 5px 15px rgba(154, 125, 10, 0.4);
+}
+
+.cultural-bg {
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 100%),
+    url('https://www.transparenttextures.com/patterns/handmade-paper.png');
+}
+
+.mandala-decoration {
+  opacity: 0.1;
+  position: absolute;
+  pointer-events: none;
+}
