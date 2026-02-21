@@ -34,7 +34,7 @@ export default function RegisterForm() {
         sponsorshipTier: 'Bronze',
     });
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000/api';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://76.13.245.28/api';
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

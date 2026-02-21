@@ -29,7 +29,7 @@ export default function ContentCMS() {
     const [saving, setSaving] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000/api';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://76.13.245.28/api';
     const storageUrl = backendUrl.replace('/api', '');
 
     useEffect(() => {
