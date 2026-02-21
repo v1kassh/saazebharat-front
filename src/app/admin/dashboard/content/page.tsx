@@ -156,12 +156,12 @@ export default function ContentCMS() {
                                     label={`IMAGE ${n}`}
                                     value={findValue(`hero_image_${n}`)}
                                     getFullUrl={getFullUrl}
-                                    onUpload={(e) => handleFileUpload(e, `hero_image_${n}`, 'hero')}
+                                    onUpload={(e: React.ChangeEvent<HTMLInputElement>) => handleFileUpload(e, `hero_image_${n}`, 'hero')}
                                 />
                             ))}
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', alignItems: 'end' }}>
-                            <InputField label="Slider Speed (ms)" value={findValue('hero_slider_speed')} modified={isFieldModified('hero_slider_speed')} onChange={(v) => handleValueChange('hero_slider_speed', v, 'hero')} />
+                            <InputField label="Slider Speed (ms)" value={findValue('hero_slider_speed')} modified={isFieldModified('hero_slider_speed')} onChange={(v: any) => handleValueChange('hero_slider_speed', v, 'hero')} />
                             <p style={{ fontSize: '0.85rem', color: '#64748B', fontStyle: 'italic', marginBottom: '0.8rem' }}>
                                 <Clock size={16} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
                                 Recommended: 5000ms (5 seconds) for a premium experience.
@@ -169,10 +169,10 @@ export default function ContentCMS() {
                         </div>
                         <hr style={{ border: 'none', borderTop: '1px solid #F1F5F9' }} />
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-                            <InputField label="Main Sacred Title" value={findValue('hero_title')} modified={isFieldModified('hero_title')} onChange={(v) => handleValueChange('hero_title', v, 'hero')} />
-                            <InputField label="Hindi Subtitle" value={findValue('hero_subtitle')} modified={isFieldModified('hero_subtitle')} onChange={(v) => handleValueChange('hero_subtitle', v, 'hero')} />
+                            <InputField label="Main Sacred Title" value={findValue('hero_title')} modified={isFieldModified('hero_title')} onChange={(v: any) => handleValueChange('hero_title', v, 'hero')} />
+                            <InputField label="Hindi Subtitle" value={findValue('hero_subtitle')} modified={isFieldModified('hero_subtitle')} onChange={(v: any) => handleValueChange('hero_subtitle', v, 'hero')} />
                         </div>
-                        <TextAreaField label="Evocative Tagline" value={findValue('hero_tagline')} modified={isFieldModified('hero_tagline')} onChange={(v) => handleValueChange('hero_tagline', v, 'hero')} />
+                        <TextAreaField label="Evocative Tagline" value={findValue('hero_tagline')} modified={isFieldModified('hero_tagline')} onChange={(v: any) => handleValueChange('hero_tagline', v, 'hero')} />
                     </div>
                 </SectionBlock>
 
@@ -180,16 +180,16 @@ export default function ContentCMS() {
                 <SectionBlock title="Narrative (About)" icon={Info} enabledKey="about_enabled" section="about" findValue={findValue} handleValueChange={handleValueChange}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '3rem' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                            <InputField label="Section Heading" value={findValue('about_heading')} modified={isFieldModified('about_heading')} onChange={(v) => handleValueChange('about_heading', v, 'about')} />
+                            <InputField label="Section Heading" value={findValue('about_heading')} modified={isFieldModified('about_heading')} onChange={(v: any) => handleValueChange('about_heading', v, 'about')} />
                             <ImageUploadBox
                                 label="PRIMARY STORY IMAGE"
                                 value={findValue('about_image')}
                                 getFullUrl={getFullUrl}
-                                onUpload={(e) => handleFileUpload(e, 'about_image', 'about')}
+                                onUpload={(e:React.ChangeEvent<HTMLInputElement>) => handleFileUpload(e, 'about_image', 'about')}
                             />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            {[1, 2, 3].map(n => <TextAreaField key={n} label={`Story Block ${n}`} rows={5} value={findValue(`about_p${n}`)} modified={isFieldModified(`about_p${n}`)} onChange={(v) => handleValueChange(`about_p${n}`, v, 'about')} />)}
+                            {[1, 2, 3].map(n => <TextAreaField key={n} label={`Story Block ${n}`} rows={5} value={findValue(`about_p${n}`)} modified={isFieldModified(`about_p${n}`)} onChange={(v: any) => handleValueChange(`about_p${n}`, v, 'about')} />)}
                         </div>
                     </div>
                 </SectionBlock>
@@ -199,8 +199,8 @@ export default function ContentCMS() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
                         {[1, 2, 3, 4].map(n => (
                             <div key={n} style={{ padding: '2rem', background: '#F8FAFC', borderRadius: '20px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                                <InputField label={`Pillar ${n} Title`} value={findValue(`pillar_${n}_title`)} modified={isFieldModified(`pillar_${n}_title`)} onChange={(v) => handleValueChange(`pillar_${n}_title`, v, 'pillars')} />
-                                <TextAreaField label="Description" rows={4} value={findValue(`pillar_${n}_desc`)} modified={isFieldModified(`pillar_${n}_desc`)} onChange={(v) => handleValueChange(`pillar_${n}_desc`, v, 'pillars')} />
+                                <InputField label={`Pillar ${n} Title`} value={findValue(`pillar_${n}_title`)} modified={isFieldModified(`pillar_${n}_title`)} onChange={(v: any) => handleValueChange(`pillar_${n}_title`, v, 'pillars')} />
+                                <TextAreaField label="Description" rows={4} value={findValue(`pillar_${n}_desc`)} modified={isFieldModified(`pillar_${n}_desc`)} onChange={(v: any) => handleValueChange(`pillar_${n}_desc`, v, 'pillars')} />
                             </div>
                         ))}
                     </div>

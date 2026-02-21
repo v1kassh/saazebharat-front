@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import axios from 'axios';
 import { Search, Filter, RefreshCw, Loader2, Download, X as XIcon, FileSpreadsheet } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function RegistrationsAdmin() {
+function RegistrationsAdmin() {
     const [registrations, setRegistrations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({ category: '', search: '' });
@@ -77,7 +77,7 @@ export default function RegistrationsAdmin() {
                     >
                         <Download size={18} /> Export CSV
                     </button>
-                    <button className="btn-gold" style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', border: 'none', background: '#F8FAFC', color: '#7B241C', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, border: '1px solid #E2E8F0' }} onClick={fetchData}>
+                    <button className="btn-gold" style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', background: '#F8FAFC', color: '#7B241C', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, border: '1px solid #E2E8F0' }} onClick={fetchData}>
                         <RefreshCw size={18} className={loading ? 'animate-spin' : ''} /> Refresh List
                     </button>
                 </div>
@@ -242,4 +242,10 @@ export default function RegistrationsAdmin() {
             `}</style>
         </div>
     );
+}
+
+export default function Page () {
+    <Suspense fallback={<div>Loading...</div>}>
+        <RegistrationsAdmin />
+    </Suspense>
 }
