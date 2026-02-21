@@ -15,7 +15,7 @@ function RegistrationsAdmin() {
     const [exportRange, setExportRange] = useState({ from: 1, to: 100, category: '' });
     const [exportLoading, setExportLoading] = useState(false);
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://76.13.245.28/api';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.saaz-e-bharat.com/api';
 
     const fetchData = async () => {
         setLoading(true);

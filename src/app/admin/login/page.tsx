@@ -14,7 +14,7 @@ export default function AdminLogin() {
     const [userId, setUserId] = useState('');
     const [error, setError] = useState('');
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://76.13.245.28/api';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.saaz-e-bharat.com/api';
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();

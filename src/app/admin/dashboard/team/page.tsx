@@ -12,7 +12,7 @@ export default function TeamManagement() {
     const [newAdmin, setNewAdmin] = useState({ username: '', email: '', password: '', role: 'admin' });
     const [actionLoading, setActionLoading] = useState(false);
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://76.13.245.28/api';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.saaz-e-bharat.com/api';
 
     const fetchAdmins = async () => {
         setLoading(true);

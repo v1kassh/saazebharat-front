@@ -13,7 +13,7 @@ export default function AdminDashboard() {
     const [recentLogs, setRecentLogs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://76.13.245.28/api';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.saaz-e-bharat.com/api';
 
     useEffect(() => {
         const fetchDashboardData = async () => {

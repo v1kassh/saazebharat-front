@@ -12,7 +12,7 @@ export default function AuditLogs() {
     const [filterAction, setFilterAction] = useState('ALL');
     const [expandedLog, setExpandedLog] = useState<string | null>(null);
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://76.13.245.28/api';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.saaz-e-bharat.com/api';
 
     const fetchLogs = async () => {
         setLoading(true);
