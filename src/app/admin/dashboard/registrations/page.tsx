@@ -245,7 +245,9 @@ function RegistrationsAdmin() {
 }
 
 export default function Page () {
-    <Suspense fallback={<div>Loading...</div>}>
-        <RegistrationsAdmin />
-    </Suspense>
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <RegistrationsAdmin />
+        </Suspense>
+    );
 }
