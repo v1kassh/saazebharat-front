@@ -19,7 +19,8 @@ import {
     CheckCircle2,
     RefreshCcw,
     Zap,
-    Clock
+    Clock,
+    Mail
 } from 'lucide-react';
 
 export default function ContentCMS() {
@@ -28,11 +29,21 @@ export default function ContentCMS() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
+    const [userRole, setUserRole] = useState('');
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.saaz-e-bharat.com/api';
     const storageUrl = backendUrl.replace('/api', '');
 
     useEffect(() => {
+        const adminUser = localStorage.getItem('adminUser');
+        if (adminUser) {
+            try {
+                const parsed = JSON.parse(adminUser);
+                setUserRole(parsed.role);
+            } catch (e) {
+                console.error('Failed to parse admin user');
+            }
+        }
         fetchContent();
     }, []);
 
@@ -86,6 +97,16 @@ export default function ContentCMS() {
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string, section: string) => {
         if (!e.target.files?.[0]) return;
         const file = e.target.files[0];
+
+        // Basic size validation (2MB for hero, 1MB for others)
+        const isHero = section === 'hero';
+        const maxSize = isHero ? 2 * 1024 * 1024 : 1 * 1024 * 1024;
+
+        if (file.size > maxSize) {
+            alert(`File is too large. Max allowed for this section is ${isHero ? '2MB' : '1MB'}.`);
+            return;
+        }
+
         const formData = new FormData();
         formData.append('media', file);
         formData.append('key', key);
@@ -139,9 +160,31 @@ export default function ContentCMS() {
                 <div>
                     <h1 style={{ fontSize: '2.5rem', fontFamily: 'Playfair Display', color: '#1E293B', fontWeight: 900 }}>Narrative Center</h1>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    {userRole !== 'super_admin' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#7B241C', fontSize: '0.85rem', fontWeight: 600, background: '#FEF2F2', padding: '0.6rem 1rem', borderRadius: '10px' }}>
+                            <AlertCircle size={16} />
+                            Read-Only Access
+                        </div>
+                    )}
                     {hasChanges && <button onClick={discardChanges} style={{ padding: '0.8rem 1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer', fontWeight: 600 }}>Discard</button>}
-                    <button onClick={handleSaveBatch} disabled={saving || !hasChanges} style={{ padding: '0.8rem 2.5rem', borderRadius: '12px', background: hasChanges ? '#7B241C' : '#F1F5F9', color: hasChanges ? 'white' : '#94A3B8', border: 'none', cursor: hasChanges ? 'pointer' : 'not-allowed', fontWeight: 'bold', boxShadow: hasChanges ? '0 10px 20px rgba(123, 36, 28, 0.2)' : 'none', transition: 'all 0.3s ease' }}>Sync to Live</button>
+                    <button
+                        onClick={handleSaveBatch}
+                        disabled={saving || !hasChanges || userRole !== 'super_admin'}
+                        style={{
+                            padding: '0.8rem 2.5rem',
+                            borderRadius: '12px',
+                            background: (hasChanges && userRole === 'super_admin') ? '#7B241C' : '#F1F5F9',
+                            color: (hasChanges && userRole === 'super_admin') ? 'white' : '#94A3B8',
+                            border: 'none',
+                            cursor: (hasChanges && userRole === 'super_admin') ? 'pointer' : 'not-allowed',
+                            fontWeight: 'bold',
+                            boxShadow: (hasChanges && userRole === 'super_admin') ? '0 10px 20px rgba(123, 36, 28, 0.2)' : 'none',
+                            transition: 'all 0.3s ease'
+                        }}
+                    >
+                        Sync to Live
+                    </button>
                 </div>
             </header>
 
@@ -154,6 +197,7 @@ export default function ContentCMS() {
                                 <ImageUploadBox
                                     key={n}
                                     label={`IMAGE ${n}`}
+                                    sizeHint="Recommended: 1920x1080px (Max 2MB)"
                                     value={findValue(`hero_image_${n}`)}
                                     getFullUrl={getFullUrl}
                                     onUpload={(e: React.ChangeEvent<HTMLInputElement>) => handleFileUpload(e, `hero_image_${n}`, 'hero')}
@@ -183,9 +227,10 @@ export default function ContentCMS() {
                             <InputField label="Section Heading" value={findValue('about_heading')} modified={isFieldModified('about_heading')} onChange={(v: any) => handleValueChange('about_heading', v, 'about')} />
                             <ImageUploadBox
                                 label="PRIMARY STORY IMAGE"
+                                sizeHint="Recommended: 1200x800px (Max 1MB)"
                                 value={findValue('about_image')}
                                 getFullUrl={getFullUrl}
-                                onUpload={(e:React.ChangeEvent<HTMLInputElement>) => handleFileUpload(e, 'about_image', 'about')}
+                                onUpload={(e: React.ChangeEvent<HTMLInputElement>) => handleFileUpload(e, 'about_image', 'about')}
                             />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -193,6 +238,93 @@ export default function ContentCMS() {
                         </div>
                     </div>
                 </SectionBlock>
+
+                {/* Email Communications Section - Restricted to Super Admin */}
+                {userRole === 'super_admin' && (
+                    <SectionBlock title="Email Communications" icon={Mail} enabledKey="emails_enabled" section="email_template" findValue={findValue} handleValueChange={handleValueChange}>
+                        <div style={{ display: 'grid', gap: '3rem' }}>
+                            <div style={{ background: '#F0F9FF', padding: '1.5rem', borderRadius: '16px', border: '1px solid #BAE6FD', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <Zap size={24} color="#0284C7" />
+                                <p style={{ margin: 0, fontSize: '0.9rem', color: '#0369A1', lineHeight: 1.5 }}>
+                                    Standard Placeholders: <strong>{'{name}'}</strong> (Participant Name), <strong>{'{category}'}</strong> (Registration Type), <strong>{'{otp}'}</strong> (Verification Code).
+                                </p>
+                            </div>
+
+                            {/* Approval Template */}
+                            <div style={{ padding: '2rem', background: '#F8FAFC', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
+                                <h3 style={{ fontSize: '1.1rem', color: '#7B241C', marginBottom: '1.5rem', fontWeight: 800 }}>1. CONFIRMATION EMAIL (POST-APPROVAL)</h3>
+                                <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                    <InputField
+                                        label="Subject Line"
+                                        value={findValue('EMAIL_CONFIRM_SUBJECT', 'Namaste! Your Saaz-e-Bharat Registration is Confirmed')}
+                                        modified={isFieldModified('EMAIL_CONFIRM_SUBJECT')}
+                                        onChange={(v: any) => handleValueChange('EMAIL_CONFIRM_SUBJECT', v, 'email_template')}
+                                    />
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                                        <InputField
+                                            label="Header Title"
+                                            value={findValue('EMAIL_CONFIRM_TITLE', 'SAAZ-E-BHARAT')}
+                                            modified={isFieldModified('EMAIL_CONFIRM_TITLE')}
+                                            onChange={(v: any) => handleValueChange('EMAIL_CONFIRM_TITLE', v, 'email_template')}
+                                        />
+                                        <InputField
+                                            label="Header Tagline"
+                                            value={findValue('EMAIL_CONFIRM_TAGLINE', 'Virasat Se Vikas Tak')}
+                                            modified={isFieldModified('EMAIL_CONFIRM_TAGLINE')}
+                                            onChange={(v: any) => handleValueChange('EMAIL_CONFIRM_TAGLINE', v, 'email_template')}
+                                        />
+                                    </div>
+                                    <TextAreaField
+                                        label="Main Message Body"
+                                        rows={5}
+                                        value={findValue('EMAIL_CONFIRM_BODY', `It gives us immense joy to inform you that your application for <strong>Saaz-e-Bharat May 2026</strong> has been officially confirmed.`)}
+                                        modified={isFieldModified('EMAIL_CONFIRM_BODY')}
+                                        onChange={(v: any) => handleValueChange('EMAIL_CONFIRM_BODY', v, 'email_template')}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* OTP & Verification Templates */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                                <div style={{ padding: '2rem', background: '#F8FAFC', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
+                                    <h3 style={{ fontSize: '1rem', color: '#1E293B', marginBottom: '1.5rem', fontWeight: 800 }}>2. IDENTITY VERIFICATION (OTP)</h3>
+                                    <div style={{ display: 'grid', gap: '1.2rem' }}>
+                                        <InputField label="OTP Subject" value={findValue('EMAIL_OTP_SUBJECT', 'Saaz-e-Bharat - Verify Your Identity')} modified={isFieldModified('EMAIL_OTP_SUBJECT')} onChange={(v: any) => handleValueChange('EMAIL_OTP_SUBJECT', v, 'email_template')} />
+                                        <TextAreaField label="OTP Message" rows={3} value={findValue('EMAIL_OTP_BODY', 'To continue your registration, please verify your identity with the code below:')} modified={isFieldModified('EMAIL_OTP_BODY')} onChange={(v: any) => handleValueChange('EMAIL_OTP_BODY', v, 'email_template')} />
+                                    </div>
+                                </div>
+                                <div style={{ padding: '2rem', background: '#F8FAFC', borderRadius: '24px', border: '1px solid #E2E8F0' }}>
+                                    <h3 style={{ fontSize: '1rem', color: '#1E293B', marginBottom: '1.5rem', fontWeight: 800 }}>3. RECEIPT ACKNOWLEDGEMENT</h3>
+                                    <div style={{ display: 'grid', gap: '1.2rem' }}>
+                                        <InputField label="Receipt Subject" value={findValue('EMAIL_RECEIPT_SUBJECT', 'Saaz-e-Bharat - Application Received')} modified={isFieldModified('EMAIL_RECEIPT_SUBJECT')} onChange={(v: any) => handleValueChange('EMAIL_RECEIPT_SUBJECT', v, 'email_template')} />
+                                        <TextAreaField label="Receipt Message" rows={3} value={findValue('EMAIL_RECEIPT_BODY', 'Namaste {name}, your registration has been verified. Our team is now reviewing your information.')} modified={isFieldModified('EMAIL_RECEIPT_BODY')} onChange={(v: any) => handleValueChange('EMAIL_RECEIPT_BODY', v, 'email_template')} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Rejection Template */}
+                            <div style={{ padding: '2rem', background: '#FFF7F7', borderRadius: '24px', border: '1px solid #FEE2E2' }}>
+                                <h3 style={{ fontSize: '1.1rem', color: '#991B1B', marginBottom: '1.5rem', fontWeight: 800 }}>4. REJECTION NOTICE</h3>
+                                <div style={{ display: 'grid', gap: '1.5rem' }}>
+                                    <InputField
+                                        label="Rejection Subject"
+                                        value={findValue('EMAIL_REJECT_SUBJECT', 'Saaz-e-Bharat - Application Update')}
+                                        modified={isFieldModified('EMAIL_REJECT_SUBJECT')}
+                                        onChange={(v: any) => handleValueChange('EMAIL_REJECT_SUBJECT', v, 'email_template')}
+                                    />
+                                    <TextAreaField
+                                        label="Rejection Main Content"
+                                        rows={4}
+                                        value={findValue('EMAIL_REJECT_BODY', 'Thank you for your interest. After review, we regret to inform you that we cannot proceed with your registration at this time.')}
+                                        modified={isFieldModified('EMAIL_REJECT_BODY')}
+                                        onChange={(v: any) => handleValueChange('EMAIL_REJECT_BODY', v, 'email_template')}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </SectionBlock>
+                )}
+
 
                 {/* Pillars Section */}
                 <SectionBlock title="Sacred Pillars" icon={Award} enabledKey="pillars_enabled" section="pillars" findValue={findValue} handleValueChange={handleValueChange}>
@@ -230,10 +362,13 @@ function SectionBlock({ title, icon: Icon, enabledKey, section, children, findVa
     );
 }
 
-function ImageUploadBox({ label, value, getFullUrl, onUpload }: any) {
+function ImageUploadBox({ label, value, getFullUrl, onUpload, sizeHint }: any) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</label>
+                {sizeHint && <span style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 600 }}>{sizeHint}</span>}
+            </div>
             <div style={{ position: 'relative', height: '220px', border: '2px dashed #E2E8F0', borderRadius: '24px', overflow: 'hidden', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease' }}>
                 {value ? (
                     <img src={getFullUrl(value)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e: any) => e.target.style.display = 'none'} />
@@ -244,8 +379,8 @@ function ImageUploadBox({ label, value, getFullUrl, onUpload }: any) {
                     </div>
                 )}
                 <label style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: '#1E293B', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '12px', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                    <UploadCloud size={18} /> Upload Artwork
-                    <input type="file" hidden onChange={onUpload} />
+                    <UploadCloud size={18} /> Upload
+                    <input type="file" hidden onChange={onUpload} accept="image/*" />
                 </label>
             </div>
         </div>
