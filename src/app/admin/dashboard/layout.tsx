@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Users, FileText, Settings, LogOut, BarChart3, ScanQrCode, Menu, X, Shield } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
@@ -27,6 +28,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         window.location.href = '/admin/login';
     };
 
+    const pathname = usePathname();
+
     return (
         <div className="admin-layout" style={{ display: 'flex', height: '100vh', background: '#F8FAFC' }}>
             {/* Sidebar */}
@@ -40,28 +43,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 boxShadow: '4px 0 10px rgba(0,0,0,0.1)'
             }}>
                 <div style={{ padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: isSidebarOpen ? 'space-between' : 'center' }}>
-                    {isSidebarOpen && <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Saaz-e-Bharat</h2>}
+                    {isSidebarOpen && <h2 style={{ fontSize: '1.2rem', margin: 0, fontFamily: 'Playfair Display' }}>Saaz-e-Bharat</h2>}
                     <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
                         {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                 </div>
 
                 <nav style={{ flex: 1, padding: '1rem' }}>
-                    {menuItems.filter(item => !item.superOnly || admin?.role === 'super_admin').map((item) => (
-                        <Link key={item.name} href={item.path} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            padding: '1rem',
-                            borderRadius: '8px',
-                            marginBottom: '0.5rem',
-                            color: 'rgba(255,255,255,0.8)',
-                            gap: '12px',
-                            transition: 'all 0.2s'
-                        }} className="nav-item">
-                            <item.icon size={20} />
-                            {isSidebarOpen && <span>{item.name}</span>}
-                        </Link>
-                    ))}
+                    {menuItems.filter(item => !item.superOnly || admin?.role === 'super_admin').map((item) => {
+                        const isActive = pathname === item.path;
+                        return (
+                            <Link key={item.name} href={item.path} style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '1rem',
+                                borderRadius: '12px',
+                                marginBottom: '0.5rem',
+                                color: isActive ? 'var(--primary)' : 'rgba(255,255,255,0.8)',
+                                background: isActive ? 'white' : 'transparent',
+                                gap: '12px',
+                                transition: 'all 0.2s',
+                                fontWeight: isActive ? 700 : 500,
+                                boxShadow: isActive ? '0 10px 15px rgba(0,0,0,0.1)' : 'none'
+                            }} className="nav-item">
+                                <item.icon size={20} />
+                                {isSidebarOpen && <span>{item.name}</span>}
+                            </Link>
+                        );
+                    })}
                 </nav>
 
                 <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
