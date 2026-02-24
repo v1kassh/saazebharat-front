@@ -12,19 +12,34 @@ const DetailItem = ({ label, value }: { label: string, value: any }) => (
     </div>
 );
 
+interface Registration {
+    _id: string;
+    fullName?: string;
+    artistName?: string;
+    email: string;
+    phone: string;
+    category: string;
+    status: string;
+    attendanceDay?: string;
+    createdAt: string;
+    documentUrl?: string;
+    city?: string;
+    organization?: string;
+    [key: string]: any;
+}
+
 function RegistrationsAdmin() {
-    const [registrations, setRegistrations] = useState([]);
+    const [registrations, setRegistrations] = useState<Registration[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState({ category: '', search: '', attendanceDay: '' });
+    const [filter, setFilter] = useState({ category: '', search: '', attendanceDay: '', status: '' });
     const [actionLoading, setActionLoading] = useState(false);
     const [userRole, setUserRole] = useState('');
+    const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
 
     // Export Modal State
     const [showExportModal, setShowExportModal] = useState(false);
     const [exportRange, setExportRange] = useState({ from: 1, to: 100, category: '' });
     const [exportLoading, setExportLoading] = useState(false);
-
-    const [selectedRegistration, setSelectedRegistration] = useState<any>(null);
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.saaz-e-bharat.com/api';
 
@@ -54,7 +69,11 @@ function RegistrationsAdmin() {
                 console.error('Failed to parse admin user');
             }
         }
+    }, []);
+
+    useEffect(() => {
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filter]);
 
     const handleApprove = async (id: string) => {

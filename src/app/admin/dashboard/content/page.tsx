@@ -73,8 +73,9 @@ export default function ContentCMS() {
     const getFullUrl = (path: string) => {
         if (!path) return '';
         if (path.startsWith('http')) return path;
-        // Ensure path matches /uploads/...
-        return `${storageUrl}${path}`;
+        // Ensure path starts with a slash
+        const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+        return `${storageUrl}${normalizedPath}`;
     };
 
     const isFieldModified = (key: string) => {
@@ -98,12 +99,12 @@ export default function ContentCMS() {
         if (!e.target.files?.[0]) return;
         const file = e.target.files[0];
 
-        // Basic size validation (2MB for hero, 1MB for others)
+        // Basic size validation (5MB for hero, 2MB for others)
         const isHero = section === 'hero';
-        const maxSize = isHero ? 2 * 1024 * 1024 : 1 * 1024 * 1024;
+        const maxSize = isHero ? 5 * 1024 * 1024 : 2 * 1024 * 1024;
 
         if (file.size > maxSize) {
-            alert(`File is too large. Max allowed for this section is ${isHero ? '2MB' : '1MB'}.`);
+            alert(`File is too large. Max allowed for this section is ${isHero ? '5MB' : '2MB'}.`);
             return;
         }
 
@@ -197,7 +198,7 @@ export default function ContentCMS() {
                                 <ImageUploadBox
                                     key={n}
                                     label={`IMAGE ${n}`}
-                                    sizeHint="Recommended: 1920x1080px (Max 2MB)"
+                                    sizeHint="Recommended: 1920x1080px (Max 5MB)"
                                     value={findValue(`hero_image_${n}`)}
                                     getFullUrl={getFullUrl}
                                     onUpload={(e: React.ChangeEvent<HTMLInputElement>) => handleFileUpload(e, `hero_image_${n}`, 'hero')}
@@ -227,7 +228,7 @@ export default function ContentCMS() {
                             <InputField label="Section Heading" value={findValue('about_heading')} modified={isFieldModified('about_heading')} onChange={(v: any) => handleValueChange('about_heading', v, 'about')} />
                             <ImageUploadBox
                                 label="PRIMARY STORY IMAGE"
-                                sizeHint="Recommended: 1200x800px (Max 1MB)"
+                                sizeHint="Recommended: 1200x800px (Max 2MB)"
                                 value={findValue('about_image')}
                                 getFullUrl={getFullUrl}
                                 onUpload={(e: React.ChangeEvent<HTMLInputElement>) => handleFileUpload(e, 'about_image', 'about')}
@@ -363,19 +364,41 @@ function SectionBlock({ title, icon: Icon, enabledKey, section, children, findVa
 }
 
 function ImageUploadBox({ label, value, getFullUrl, onUpload, sizeHint }: any) {
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        setError(false);
+    }, [value]);
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</label>
                 {sizeHint && <span style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 600 }}>{sizeHint}</span>}
             </div>
-            <div style={{ position: 'relative', height: '220px', border: '2px dashed #E2E8F0', borderRadius: '24px', overflow: 'hidden', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease' }}>
-                {value ? (
-                    <img src={getFullUrl(value)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e: any) => e.target.style.display = 'none'} />
+            <div style={{
+                position: 'relative',
+                height: '220px',
+                border: error ? '2px dashed #EF4444' : '2px dashed #E2E8F0',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                background: error ? '#FEF2F2' : '#F8FAFC',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease'
+            }}>
+                {value && !error ? (
+                    <img
+                        src={getFullUrl(value)}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={() => setError(true)}
+                    />
                 ) : (
-                    <div style={{ textAlign: 'center', color: '#CBD5E1' }}>
-                        <ImageIcon size={48} style={{ marginBottom: '1rem' }} />
-                        <p style={{ fontSize: '0.8rem', fontWeight: 600 }}>No Image Selected</p>
+                    <div style={{ textAlign: 'center', color: error ? '#EF4444' : '#CBD5E1' }}>
+                        {error ? <AlertCircle size={48} style={{ marginBottom: '1rem' }} /> : <ImageIcon size={48} style={{ marginBottom: '1rem' }} />}
+                        <p style={{ fontSize: '0.8rem', fontWeight: 600 }}>{error ? 'Image Failed to Load' : 'No Image Selected'}</p>
+                        {error && <p style={{ fontSize: '0.7rem', opacity: 0.8 }}>File may be missing or corrupted</p>}
                     </div>
                 )}
                 <label style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: '#1E293B', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '12px', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
